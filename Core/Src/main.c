@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "usb_device.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -77,7 +77,7 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
+  __HAL_RCC_SYSCFG_CLK_ENABLE();
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -94,7 +94,7 @@ int main(void)
   MX_GPIO_Init();
   MX_USB_OTG_HS_PCD_Init();
   /* USER CODE BEGIN 2 */
-
+  MX_USB_Device_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */

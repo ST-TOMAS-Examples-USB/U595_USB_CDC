@@ -193,7 +193,7 @@ void SysTick_Handler(void)
 
 /******************************************************************************/
 /* STM32U5xx Peripheral Interrupt Handlers                                    */
-/* Add here the Interrupt Handlers for the used peripherals.                  */
+/* Add here the Interrupt Handlers f or the used peripherals.                  */
 /* For the available peripheral interrupt handler names,                      */
 /* please refer to the startup file (startup_stm32u5xx.s).                    */
 /******************************************************************************/

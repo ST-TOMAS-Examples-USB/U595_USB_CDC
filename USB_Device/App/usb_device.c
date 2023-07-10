@@ -56,7 +56,7 @@ void USBD_Clock_Config(void)
   RCC_OscInitStruct.HSI48State = RCC_HSI48_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
   PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_CLK48;
-  PeriphClkInitStruct.Clk48ClockSelection = RCC_CLK48CLKSOURCE_HSI48;
+//  PeriphClkInitStruct.Clk48ClockSelection = RCC_CLK48CLKSOURCE_HSI48;
   HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct);
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct)!= HAL_OK)
   {
@@ -106,6 +106,9 @@ void MX_USB_Device_Init(void)
     Error_Handler();
   }
     if (USBD_CDC_RegisterInterface(&hUsbDeviceFS, &USBD_CDC_fops) != USBD_OK) {
+    Error_Handler();
+  }
+    if (   USBD_Start(&hUsbDeviceFS) != USBD_OK) {
     Error_Handler();
   }
 

@@ -30,7 +30,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 
-PCD_HandleTypeDef hpcd_USB_OTG_FS;
+extern PCD_HandleTypeDef hpcd_USB_OTG_HS;
 
 extern void Error_Handler(void);
 
@@ -50,61 +50,61 @@ extern void SystemClock_Config(void);
                        LL Driver Callbacks (PCD -> USB Device Library)
 *******************************************************************************/
 /* MSP Init */
+//
+//#if (USE_HAL_PCD_REGISTER_CALLBACK == 1U)
+//static void HAL_PCD_MspInit(PCD_HandleTypeDef* pcdHandle)
+//#else
+//void HAL_PCD_MspInit(PCD_HandleTypeDef* pcdHandle)
+//#endif /* USE_HAL_PCD_REGISTER_CALLBACK */
+//{
+//  GPIO_InitTypeDef GPIO_InitStruct = {0};
+//  __HAL_RCC_GPIOA_CLK_ENABLE();
+//  /**USB GPIO Configuration
+//  PA11     ------> USB_DM
+//  PA12     ------> USB_DP
+//  */
+//  GPIO_InitStruct.Pin = GPIO_PIN_11|GPIO_PIN_12;
+//  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+//  GPIO_InitStruct.Pull = GPIO_NOPULL;
+//  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+//  GPIO_InitStruct.Alternate  = GPIO_AF10_USB;
+//  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+//
+//  /* Peripheral clock enable */
+//  __HAL_RCC_USB_CLK_ENABLE();
+//
+//  /* Set USB FS Interrupt priority */
+//  HAL_NVIC_SetPriority(OTG_HS_IRQn, 6, 0);
+//
+//  /* Enable USB FS Interrupt */
+//  HAL_NVIC_EnableIRQ(OTG_HS_IRQn);
+//
+//}
 
-#if (USE_HAL_PCD_REGISTER_CALLBACK == 1U)
-static void HAL_PCD_MspInit(PCD_HandleTypeDef* pcdHandle)
-#else
-void HAL_PCD_MspInit(PCD_HandleTypeDef* pcdHandle)
-#endif /* USE_HAL_PCD_REGISTER_CALLBACK */
-{
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
-  __HAL_RCC_GPIOA_CLK_ENABLE();
-  /**USB GPIO Configuration
-  PA11     ------> USB_DM
-  PA12     ------> USB_DP
-  */
-  GPIO_InitStruct.Pin = GPIO_PIN_11|GPIO_PIN_12;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-  GPIO_InitStruct.Alternate  = GPIO_AF10_USB;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /* Peripheral clock enable */
-  __HAL_RCC_USB_CLK_ENABLE();
-
-  /* Set USB FS Interrupt priority */
-  HAL_NVIC_SetPriority(OTG_FS_IRQn, 6, 0);
-
-  /* Enable USB FS Interrupt */
-  HAL_NVIC_EnableIRQ(OTG_FS_IRQn);
-
-}
-
-#if (USE_HAL_PCD_REGISTER_CALLBACK == 1U)
-static void HAL_PCD_MspDeInit(PCD_HandleTypeDef* pcdHandle)
-#else
-void HAL_PCD_MspDeInit(PCD_HandleTypeDef* pcdHandle)
-#endif /* USE_HAL_PCD_REGISTER_CALLBACK */
-{
-  if(pcdHandle->Instance==USB_OTG_FS)
-  {
-
-	/* Peripheral clock disable */
-	__HAL_RCC_USB_CLK_DISABLE();
-
-	/**USB GPIO Configuration
-	PA11     ------> USB_DM
-	PA12     ------> USB_DP
-	*/
-	HAL_GPIO_DeInit(GPIOA, GPIO_PIN_11|GPIO_PIN_12);
-
-	/* Peripheral interrupt Deinit*/
-	HAL_NVIC_DisableIRQ(OTG_FS_IRQn);
-
-	__HAL_RCC_GPIOA_CLK_DISABLE();
-  }
-}
+//#if (USE_HAL_PCD_REGISTER_CALLBACK == 1U)
+//static void HAL_PCD_MspDeInit(PCD_HandleTypeDef* pcdHandle)
+//#else
+//void HAL_PCD_MspDeInit(PCD_HandleTypeDef* pcdHandle)
+//#endif /* USE_HAL_PCD_REGISTER_CALLBACK */
+//{
+//  if(pcdHandle->Instance==USB_OTG_HS)
+//  {
+//
+//	/* Peripheral clock disable */
+//	__HAL_RCC_USB_CLK_DISABLE();
+//
+//	/**USB GPIO Configuration
+//	PA11     ------> USB_DM
+//	PA12     ------> USB_DP
+//	*/
+//	HAL_GPIO_DeInit(GPIOA, GPIO_PIN_11|GPIO_PIN_12);
+//
+//	/* Peripheral interrupt Deinit*/
+//	HAL_NVIC_DisableIRQ(OTG_HS_IRQn);
+//
+//	__HAL_RCC_GPIOA_CLK_DISABLE();
+//  }
+//}
 
 /**
   * @brief  Setup stage callback
@@ -184,12 +184,12 @@ void HAL_PCD_ResetCallback(PCD_HandleTypeDef *hpcd)
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
 {
 
-  USBD_SpeedTypeDef speed = USBD_SPEED_FULL;
+  USBD_SpeedTypeDef speed = USBD_SPEED_HIGH;
 
-  if ( hpcd->Init.speed != PCD_SPEED_FULL)
-  {
-    Error_Handler();
-  }
+//  if ( hpcd->Init.speed != PCD_SPEED_FULL)
+//  {
+//    Error_Handler();
+//  }
     /* Set Speed. */
   USBD_LL_SetSpeed((USBD_HandleTypeDef*)hpcd->pData, speed);
 
@@ -317,19 +317,19 @@ USBD_StatusTypeDef USBD_LL_Init(USBD_HandleTypeDef *pdev)
 {
   /* Enable USB power on Pwrctrl CR2 register. */
   HAL_PWREx_EnableVddUSB();
-  hpcd_USB_OTG_FS.pData = pdev;
-  pdev->pData = &hpcd_USB_OTG_FS;
+  hpcd_USB_OTG_HS.pData = pdev;
+  pdev->pData = &hpcd_USB_OTG_HS;
 
-  hpcd_USB_OTG_FS.Instance = USB_OTG_FS;
-  hpcd_USB_OTG_FS.Init.dev_endpoints = 6;
-  hpcd_USB_OTG_FS.Init.speed = PCD_SPEED_FULL;
-  hpcd_USB_OTG_FS.Init.phy_itface = PCD_PHY_EMBEDDED;
-  hpcd_USB_OTG_FS.Init.Sof_enable = DISABLE;
-  hpcd_USB_OTG_FS.Init.low_power_enable = DISABLE;
-  hpcd_USB_OTG_FS.Init.lpm_enable = DISABLE;
-  hpcd_USB_OTG_FS.Init.battery_charging_enable = DISABLE;
+  hpcd_USB_OTG_HS.Instance = USB_OTG_HS;
+  hpcd_USB_OTG_HS.Init.dev_endpoints = 6;
+  hpcd_USB_OTG_HS.Init.speed = PCD_SPEED_HIGH;
+  hpcd_USB_OTG_HS.Init.phy_itface = PCD_PHY_EMBEDDED;
+  hpcd_USB_OTG_HS.Init.Sof_enable = DISABLE;
+  hpcd_USB_OTG_HS.Init.low_power_enable = DISABLE;
+  hpcd_USB_OTG_HS.Init.lpm_enable = DISABLE;
+  hpcd_USB_OTG_HS.Init.battery_charging_enable = DISABLE;
   /* Initialize LL Driver */
-  if (HAL_PCD_Init(&hpcd_USB_OTG_FS) != HAL_OK)
+  if (HAL_PCD_Init(&hpcd_USB_OTG_HS) != HAL_OK)
   {
     Error_Handler( );
   }
@@ -349,9 +349,9 @@ USBD_StatusTypeDef USBD_LL_Init(USBD_HandleTypeDef *pdev)
   HAL_PCD_RegisterIsoOutIncpltCallback(&hpcd_USB_OTG_FS, PCD_ISOOUTIncompleteCallback);
   HAL_PCD_RegisterIsoInIncpltCallback(&hpcd_USB_OTG_FS, PCD_ISOINIncompleteCallback);
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
-  HAL_PCDEx_SetRxFiFo(&hpcd_USB_OTG_FS, 0x100);
-  HAL_PCDEx_SetTxFiFo(&hpcd_USB_OTG_FS, 0, 0x10);
-  HAL_PCDEx_SetTxFiFo(&hpcd_USB_OTG_FS, 1, 0x10);
+  HAL_PCDEx_SetRxFiFo(&hpcd_USB_OTG_HS, 0x100);
+  HAL_PCDEx_SetTxFiFo(&hpcd_USB_OTG_HS, 0, 0x10);
+  HAL_PCDEx_SetTxFiFo(&hpcd_USB_OTG_HS, 1, 0x10);
   return USBD_OK;
 }
 
