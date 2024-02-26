@@ -169,7 +169,10 @@ static int8_t CDC_Itf_Receive(uint8_t * Buf, uint32_t * Len)
 {
 	  /* Initiate next USB packet transfer once UART completes transfer
 	   * (transmitting data over Tx line) */
-	  USBD_CDC_ReceivePacket(&hUsbDeviceFS);
+	  memcpy(UserTxBuffer,Buf,*Len);
+	  USBD_CDC_SetTxBuffer(&hUsbDeviceFS, UserTxBuffer, *Len);
+	  USBD_CDC_TransmitPacket(&hUsbDeviceFS);
+
   return (USBD_OK);
 }
 
@@ -191,6 +194,7 @@ static int8_t CDC_TransmitCplt(uint8_t *Buf, uint32_t *Len, uint8_t epnum)
   UNUSED(Buf);
   UNUSED(Len);
   UNUSED(epnum);
+	 USBD_CDC_ReceivePacket(&hUsbDeviceFS);//start receive again
 
   return (0);
 }
